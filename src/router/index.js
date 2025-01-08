@@ -1,11 +1,28 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createWebHistory, createRouter } from 'vue-router'
+import HomeView from '../views/HomeView.vue';
+import RegisterView from '../views/RegisterView.vue';
+import LoginView from '../views/LoginView.vue';
+import MoviesView from '../views/MoviesView.vue';
+import DetailView from '../views/DetailView.vue';
+import CartView from '../views/CartView.vue';
+import SettingView from '../views/SettingView.vue';
+import ErrorView from '../views/ErrorView.vue';
+import { userAuthorized, useStore } from '../store';
+
+const routes = [
+  { path: '/', meta: { auth: false }, component: HomeView },
+  { path: '/register', meta: { auth: false }, component: RegisterView },
+  { path: '/login', meta: { auth: false }, component: LoginView },
+  { path: '/movies', meta: { auth: true }, component: MoviesView },
+  { path: '/movies/:id', meta: { auth: true }, component: DetailView },
+  { path: '/cart', meta: { auth: true }, component: CartView },
+  { path: '/setting', meta: { auth: false }, component: SettingView},
+  { path: '/:pathMatch(.*)*', meta: { auth: false }, component: ErrorView, },
+]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    { path: '/', name: 'home', component: HomeView, },
-  ],
+    history: createWebHistory(),
+    routes,
 })
 
-export default router
+export default router;
