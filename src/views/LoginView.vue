@@ -3,18 +3,32 @@ import Footer from "../components/Footer.vue";
 import { RouterLink, useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { useStore } from "../store"
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth } from "../firebase"
 
 const store = useStore();
 const router = useRouter();
 const email = ref('');
 const password = ref('');
 
-const handleLogin = () => {
-  if (password.value === "password") {
-    store.email = email.value;
+const loginByEmail = async () => {
+  try {
+    const user = (await signInWithEmailAndPassword(auth, email.value, password.value)).user;
+    store.user = user;
     router.push("/movies");
-  } else {
-    alert("Invalid Password");
+  } catch (error) {
+    console.log(error);
+    alert("There was an error signing in with email!");
+  }
+};
+
+const loginByGoogle = async () => {
+  try {
+    const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
+    store.user = user;
+    router.push("/movies");
+  } catch (error) {
+    alert("There was an error signing in with Google!");
   }
 };
 </script>
@@ -37,6 +51,7 @@ const handleLogin = () => {
         <input v-model:="password" type="password" placeholder="Password" class="input-field" required />
         <button type="submit" class="button">Login</button>
       </form>
+        <button @click="loginByGoogle()" type="submit" class="button">Login by Google</button>
     </div>
   </div>
   <Footer />
