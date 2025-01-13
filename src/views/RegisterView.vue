@@ -2,7 +2,9 @@
 import Footer from "../components/Footer.vue";
 import { ref } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
-import { useStore } from "../store"
+import { useStore } from "../store";
+import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth } from "../firebase";
 
 const store = useStore();
 const router = useRouter();
@@ -12,16 +14,45 @@ const password2 = ref('');
 const lastName = ref('');
 const name = ref('');
 
-const handleregister = () => {
-  if (password1.value === password2.value) {
-    store.email = email.value;
-    store.name = name.value;
-    store.lastName = lastName.value;
-    router.push("/movies");
-  } else {
-    alert("Passwords do not match");
+async function registerByEmail() {
+  if (password1.value !== password2.value) {
+    alert("Passwords do not match!");
+    return;
   }
-};
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email.value, password1.value);
+    const user = userCredential.user;
+
+    // Add user's name to profile
+    await updateProfile(user, { displayName: `${name.value} ${lastName.value}` });
+
+    // Update the store's user
+    store.user = user;
+
+    // Navigate to the movies page after successful registration
+    router.push("/movies");
+  } catch (error) {
+    console.error(error);
+    alert("There was an error creating a user with email!");
+  }
+}
+
+async function registerByGoogle() {
+  try {
+    const userCredential = await signInWithPopup(auth, new GoogleAuthProvider());
+    const user = userCredential.user;
+
+    // Update the store's user
+    store.user = user;
+
+    // Navigate to the movies page after successful login
+    router.push("/movies");
+  } catch (error) {
+    console.error(error);
+    alert("There was an error creating a user with Google!");
+  }
+}
 </script>
 
 <template>
@@ -37,14 +68,15 @@ const handleregister = () => {
   <div class="register">
     <div class="registerText">
       <h2>Create an Account</h2>
-      <form @submit.prevent="handleregister">
-        <input v-model:="name" type="text" placeholder="First Name" class="input-field" required>
-        <input v-model:="lastName" type="text" placeholder="Last Name" class="input-field" required>
-        <input v-model:="email" type="email" placeholder="Email" class="input-field" required>
-        <input v-model="password1" type="password" placeholder="Password" class="input-field" required />
-        <input v-model="password2" type="password" placeholder="Re-Enter Password" class="input-field" required />
+      <form @submit.prevent="registerByEmail">
+        <input v-model="name" type="text" placeholder="First Name" class="input-field" required>
+        <input v-model="lastName" type="text" placeholder="Last Name" class="input-field" required>
+        <input v-model="email" type="email" placeholder="Email" class="input-field" required>
+        <input v-model="password1" type="password" placeholder="Password" class="input-field" required>
+        <input v-model="password2" type="password" placeholder="Re-Enter Password" class="input-field" required>
         <button type="submit" class="button">Register</button>
       </form>
+      <button @click="registerByGoogle" class="button">Register by Google</button>
     </div>
   </div>
   <Footer />
@@ -57,6 +89,7 @@ const handleregister = () => {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  padding: 20px;
 }
 
 .header {
@@ -115,13 +148,13 @@ const handleregister = () => {
 
 .register-form {
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: nowrap;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  width: 100%;
 }
 
 .input-field {
-  flex: 1 1 22%;
   padding: 12px;
   margin: 10px 0;
   border-radius: 5px;
@@ -136,7 +169,6 @@ const handleregister = () => {
 }
 
 .button.register {
-  flex: 1 1 22%;
   padding: 12px;
   background-color: #333;
   color: white;

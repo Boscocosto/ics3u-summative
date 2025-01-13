@@ -3,19 +3,41 @@ import Footer from "../components/Footer.vue";
 import { ref } from 'vue';
 import { useRouter } from "vue-router";
 import { useStore } from '../store';
+import { updatePassword } from "firebase/auth";
+import { auth } from "../firebase";
 
 const store = useStore();
 const router = useRouter();
 const name = ref(store.name);
 const lastName = ref(store.lastName);
 const email = ref(store.email);
+const newPassword = ref('');
 
+// Update Name and Last Name
 const changeName = () => {
   store.name = name.value;
 };
 
 const changeLastName = () => {
   store.lastName = lastName.value;
+};
+
+// Update Password
+const changePassword = async () => {
+  try {
+    const user = auth.currentUser;
+
+    // Change the password
+    await updatePassword(user, newPassword.value);
+
+    alert("Password updated successfully!");
+
+    // Clear the field after success
+    newPassword.value = '';
+  } catch (error) {
+    console.error("Error occurred during password change:", error);
+    alert("There was an error updating the password. Please try again.");
+  }
 };
 </script>
 
@@ -27,7 +49,6 @@ const changeLastName = () => {
     </div>
     <div class="buttons">
       <button @click="router.push('/cart')" class="button">Cart</button>
-      <button @click="router.push('/')" class="button">Logout</button>
     </div>
   </div>
   <div class="setting">
@@ -51,6 +72,15 @@ const changeLastName = () => {
         <input v-model="email" type="email" id="email" class="input-field" readonly />
       </div>
     </div>
+
+    <!-- Change Password Section -->
+    <form @submit.prevent="changePassword" class="form">
+      <div class="input-container">
+        <p>New Password</p>
+        <input v-model="newPassword" type="password" id="newPassword" class="input-field" required />
+        <button type="submit" class="changeName">Change Password</button>
+      </div>
+    </form>
   </div>
   <Footer />
 </template>
@@ -102,17 +132,17 @@ const changeLastName = () => {
   background-size: cover;
   background-position: center;
   height: 100vh;
-  display: flex; 
-  flex-direction: column; 
-  justify-content: center; 
-  align-items: center; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 20px;
 }
 
 .form {
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
   border-radius: 10px;
 }
@@ -124,16 +154,16 @@ const changeLastName = () => {
 }
 
 .input-field {
-  padding: 10px; 
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   width: 200px;
 }
 
 .changeName {
-  padding: 10px 20px; 
-  background-color: #000000; 
-  color: white; 
+  padding: 10px 20px;
+  background-color: #000000;
+  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -141,25 +171,11 @@ const changeLastName = () => {
 }
 
 .changeName:hover {
-  background-color: #0000008d; 
-}
-
-.changeLastName {
-  padding: 10px 20px; 
-  background-color: #000000; 
-  color: white; 
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.changeLastName:hover {
-  background-color: #0000008d; 
+  background-color: #0000008d;
 }
 
 .email {
-  padding: 20px; 
+  padding: 20px;
   border-radius: 10px;
 }
 </style>
