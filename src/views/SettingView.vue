@@ -3,39 +3,38 @@ import Footer from "../components/Footer.vue";
 import { ref } from 'vue';
 import { useRouter } from "vue-router";
 import { useStore } from '../store';
-import { updatePassword } from "firebase/auth";
+import { updatePassword, updateProfile } from "firebase/auth";
 import { auth } from "../firebase";
 
 const store = useStore();
 const router = useRouter();
-const name = ref(store.name);
-const lastName = ref(store.lastName);
-const email = ref(store.email);
-const newPassword = ref('');
+const name = ref(store.user?.displayName?.split(" ")[0] || '');
+const lastName = ref(store.user?.displayName?.split(" ")[1] || '');
+const email = ref(store.user?.email || '');
+const password = ref('');
 
-// Update Name and Last Name
-const changeName = () => {
-  store.name = name.value;
+const changeName = async () => {
+  try {
+    const user = auth.currentUser;
+    if (user) {
+      await updateProfile(user, { displayName: `${name.value} ${lastName.value}` });
+
+      store.user = user;
+      alert("Name updated successfully!");
+    }
+  } catch (error) {
+    console.error("Error occurred during name change:", error);
+    alert("There was an error updating the name. Please try again.");
+  }
 };
 
-const changeLastName = () => {
-  store.lastName = lastName.value;
-};
-
-// Update Password
 const changePassword = async () => {
   try {
     const user = auth.currentUser;
-
-    // Change the password
-    await updatePassword(user, newPassword.value);
-
+    await updatePassword(user, password.value);
     alert("Password updated successfully!");
-
-    // Clear the field after success
-    newPassword.value = '';
+    password.value = '';
   } catch (error) {
-    console.error("Error occurred during password change:", error);
     alert("There was an error updating the password. Please try again.");
   }
 };
@@ -45,39 +44,38 @@ const changePassword = async () => {
   <div class="header">
     <div class="logo">
       <img src="/movie.png" class="logo" />
-      <h1>{{ `Hello ${store.name} ${store.lastName}!` }}</h1>
+      <h1>{{ `Hello ${name} ${lastName}!` }}</h1>
     </div>
     <div class="buttons">
       <button @click="router.push('/cart')" class="button">Cart</button>
     </div>
   </div>
+
   <div class="setting">
     <form @submit.prevent="changeName" class="form">
       <div class="input-container">
-        <p>{{ `First Name: ${store.name}` }}</p>
+        <p>{{ `First Name: ${name}` }}</p>
         <input v-model="name" type="text" id="name" class="input-field" />
         <button type="submit" class="changeName">Change</button>
       </div>
     </form>
-    <form @submit.prevent="changeLastName" class="form">
+    <form @submit.prevent="changeName" class="form">
       <div class="input-container">
-        <p>{{ `Last Name: ${store.lastName}` }}</p>
+        <p>{{ `Last Name: ${lastName}` }}</p>
         <input v-model="lastName" type="text" id="lastName" class="input-field" />
         <button type="submit" class="changeName">Change</button>
       </div>
     </form>
     <div class="email">
       <div class="input-container">
-        <p>{{ `Email: ${store.email}` }}</p>
+        <p>{{ `Email:` }}</p>
         <input v-model="email" type="email" id="email" class="input-field" readonly />
       </div>
     </div>
-
-    <!-- Change Password Section -->
     <form @submit.prevent="changePassword" class="form">
       <div class="input-container">
         <p>New Password</p>
-        <input v-model="newPassword" type="password" id="newPassword" class="input-field" required />
+        <input v-model="password" type="password" id="password" class="input-field" required />
         <button type="submit" class="changeName">Change Password</button>
       </div>
     </form>

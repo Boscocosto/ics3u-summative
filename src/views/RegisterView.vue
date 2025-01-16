@@ -24,13 +24,10 @@ async function registerByEmail() {
     const userCredential = await createUserWithEmailAndPassword(auth, email.value, password1.value);
     const user = userCredential.user;
 
-    // Add user's name to profile
     await updateProfile(user, { displayName: `${name.value} ${lastName.value}` });
 
-    // Update the store's user
     store.user = user;
 
-    // Navigate to the movies page after successful registration
     router.push("/movies");
   } catch (error) {
     console.error(error);
@@ -43,10 +40,8 @@ async function registerByGoogle() {
     const userCredential = await signInWithPopup(auth, new GoogleAuthProvider());
     const user = userCredential.user;
 
-    // Update the store's user
     store.user = user;
 
-    // Navigate to the movies page after successful login
     router.push("/movies");
   } catch (error) {
     console.error(error);
