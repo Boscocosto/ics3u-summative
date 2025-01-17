@@ -11,7 +11,7 @@ const store = useStore();
     <div class="header">
         <div class="logo">
             <img src="/movie.png" class="logo" />
-            <h1>{{ `Hello ${store.name} ${store.lastName}!` }}</h1>
+            <h1>{{ `Hello ${store.user?.displayName}!` }}</h1>
         </div>
         <div class="buttons">
             <button @click="router.push(`/`)" class="button">Logout</button>
@@ -23,7 +23,7 @@ const store = useStore();
         <div class="item" v-for="([key, value]) in store.cart" :key="key">
             <img :src="`https://image.tmdb.org/t/p/w500${value.url}`" alt="Movie Poster" class="item-image" />
             <h2 class="item-title">{{ value.title }}</h2>
-            <button @click="store.cart.delete(key)" class="button remove-button">Remove</button>
+            <button @click="store.removeFromCart(key)" class="button">Remove</button>
         </div>
     </div>
     <Footer />

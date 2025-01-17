@@ -20,7 +20,7 @@ onMounted(async () => {
   <div class="header">
     <div class="logo">
       <img src="/movie.png" class="logo" />
-      <h1>{{ `Hello ${store.name} ${store.lastName}!` }}</h1>
+      <h1>{{ `Hello ${store.user?.displayName}!` }}</h1>
     </div>
     <div class="buttons">
       <button @click="router.push(`/cart`)" class="button">Cart</button>

@@ -6,8 +6,30 @@ import { auth } from "../firebase";
 export const useStore = defineStore('store', () => {
   const cart = ref(new Map());
   const user = ref(null);
-  
-  return { cart, user }
+
+   function addToCart(id, movieData) {
+    cart.value.set(id, movieData);
+    saveCartToLocalStorage();
+  }
+
+  function removeFromCart(id) {
+    cart.value.delete(id);
+    saveCartToLocalStorage();
+  }
+
+  function clearCart() {
+    if (user.value && user.value.email) {
+      localStorage.removeItem(`cart_${user.value.email}`);
+    }
+  }
+
+  function saveCartToLocalStorage() {
+    if (user.value && user.value.email) {
+      localStorage.setItem(`cart_${user.value.email}`, JSON.stringify(Object.fromEntries(cart.value)));
+    }
+  }
+
+  return { user, cart, addToCart, removeFromCart };
 });
 
 export const userAuthorized = new Promise((resolve, reject) => {
@@ -15,7 +37,8 @@ export const userAuthorized = new Promise((resolve, reject) => {
     try {
       const store = useStore();
       store.user = user;
-      const storedCart = localStorage.getItem(`cart_${store.user?.email}`);
+      const storedCart = localStorage.getItem(`cart_${store.user.email}`);
+
       store.cart = storedCart ? new Map(Object.entries(JSON.parse(storedCart))) : new Map();
       resolve();
     } catch (error) {
