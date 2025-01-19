@@ -25,6 +25,7 @@ const store = useStore();
             <h2 class="item-title">{{ value.title }}</h2>
             <button @click="store.removeFromCart(key)" class="button">Remove</button>
         </div>
+        <button @click="store.clearCart()" class="button">Checkout</button>
     </div>
     <Footer />
 </template>

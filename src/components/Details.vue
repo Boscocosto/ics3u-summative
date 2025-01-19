@@ -29,11 +29,6 @@ onMounted(async () => {
     </div>
   </div>
   <div class="movie-detail">
-    <button
-      @click="store.cart.set(route.params.id, { title: response.data.original_title, url: response.data.poster_path })"
-      class="movie-site">
-      Buy
-    </button>
     <h1 class="movie-title">{{ response.data.original_title }}</h1>
     <img :src="`https://image.tmdb.org/t/p/w500${response.data.poster_path}`" alt="Movie Poster" class="movie-poster" />
     <p class="movie-overview">{{ response.data.overview }}</p>

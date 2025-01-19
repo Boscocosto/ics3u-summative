@@ -4,13 +4,15 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
 
 export const useStore = defineStore('store', () => {
-  const cart = ref(new Map());
   const user = ref(null);
+  const cart = ref(new Map());
+  const checkoutCompleted = ref(false);
 
-   function addToCart(id, movieData) {
+  function addToCart(id, movieData) {
     cart.value.set(id, movieData);
     saveCartToLocalStorage();
   }
+
 
   function removeFromCart(id) {
     cart.value.delete(id);
@@ -18,10 +20,24 @@ export const useStore = defineStore('store', () => {
   }
 
   function clearCart() {
-    if (user.value && user.value.email) {
-      localStorage.removeItem(`cart_${user.value.email}`);
-    }
-  }
+    cart.value.clear();  
+    saveCartToLocalStorage();
+  
+
+    console.log("Checkout started:", checkoutCompleted.value);
+  
+    checkoutCompleted.value = true;
+  
+
+    console.log("Checkout completed:", checkoutCompleted.value);
+  
+    setTimeout(() => {
+      checkoutCompleted.value = false;
+  
+
+      console.log("Checkout reset:", checkoutCompleted.value);
+    }, 3000);  
+  }  
 
   function saveCartToLocalStorage() {
     if (user.value && user.value.email) {
@@ -29,7 +45,7 @@ export const useStore = defineStore('store', () => {
     }
   }
 
-  return { user, cart, addToCart, removeFromCart };
+  return { user, cart, addToCart, removeFromCart, clearCart };
 });
 
 export const userAuthorized = new Promise((resolve, reject) => {

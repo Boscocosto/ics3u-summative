@@ -18,9 +18,7 @@ const changeName = async () => {
     const user = auth.currentUser;
     if (user) {
       await updateProfile(user, { displayName: `${name.value} ${lastName.value}` });
-
       store.user = user;
-      alert("Name updated successfully!");
     }
   } catch (error) {
     console.error("Error occurred during name change:", error);
@@ -48,6 +46,7 @@ const changePassword = async () => {
     </div>
     <div class="buttons">
       <button @click="router.push('/cart')" class="button">Cart</button>
+      <button @click="router.push('/')" class="button">Logout</button>
     </div>
   </div>
 

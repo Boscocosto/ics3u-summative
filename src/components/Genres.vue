@@ -44,7 +44,7 @@ onMounted(async () => {
         <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" alt="Movie Poster" class="movie-poster" />
         <p class="movie-title">{{ movie.title }}</p>
         <button
-          @click.stop="store.cart.set(movie.id, { title: movie.title, url: movie.poster_path })"
+          @click.stop="store.addToCart(movie.id, { title: movie.title, url: movie.poster_path })"
           class="movie-site">
           {{ store.cart.has(movie.id) ? 'Added' : 'Buy' }}
         </button>
