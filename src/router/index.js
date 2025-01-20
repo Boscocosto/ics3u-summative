@@ -16,7 +16,7 @@ const routes = [
   { path: '/movies', meta: { auth: true }, component: MoviesView },
   { path: '/movies/:id', meta: { auth: true }, component: DetailView },
   { path: '/cart', meta: { auth: true }, component: CartView },
-  { path: '/setting', meta: { auth: false }, component: SettingView},
+  { path: '/setting', meta: { auth: true }, component: SettingView},
   { path: '/:pathMatch(.*)*', meta: { auth: false }, component: ErrorView, },
 ]
 

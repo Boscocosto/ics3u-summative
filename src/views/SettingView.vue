@@ -17,8 +17,8 @@ const changeName = async () => {
   try {
     const user = auth.currentUser;
     if (user) {
-      await updateProfile(user, { displayName: `${name.value} ${lastName.value}` });
-      store.user = user;
+      await updateProfile(user, { displayName: `${name.value} ${lastName.value}` })
+      store.user = { ...store.user, displayName: `${name.value} ${lastName.value}` };
     }
   } catch (error) {
     console.error("Error occurred during name change:", error);
@@ -42,7 +42,7 @@ const changePassword = async () => {
   <div class="header">
     <div class="logo">
       <img src="/movie.png" class="logo" />
-      <h1>{{ `Hello ${name} ${lastName}!` }}</h1>
+      <h1>{{ `Hello ${store.user?.displayName}!` }}</h1>
     </div>
     <div class="buttons">
       <button @click="router.push('/cart')" class="button">Cart</button>
@@ -53,14 +53,14 @@ const changePassword = async () => {
   <div class="setting">
     <form @submit.prevent="changeName" class="form">
       <div class="input-container">
-        <p>{{ `First Name: ${name}` }}</p>
+        <p>{{ `First Name: ${store.user?.displayName?.split(" ")[0] || ''}` }}</p>
         <input v-model="name" type="text" id="name" class="input-field" />
         <button type="submit" class="changeName">Change</button>
       </div>
     </form>
     <form @submit.prevent="changeName" class="form">
       <div class="input-container">
-        <p>{{ `Last Name: ${lastName}` }}</p>
+        <p>{{ `Last Name: ${store.user?.displayName?.split(" ")[1] || ''}` }}</p>
         <input v-model="lastName" type="text" id="lastName" class="input-field" />
         <button type="submit" class="changeName">Change</button>
       </div>
