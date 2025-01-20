@@ -2,9 +2,16 @@
 import Footer from "../components/Footer.vue";
 import { useRouter } from "vue-router";
 import { useStore } from '../store';
+import { ref } from 'vue';
 
 const router = useRouter();
 const store = useStore();
+const thankYouMessage = ref(false);
+
+const handleCheckout = () => {
+  store.clearCart();
+  thankYouMessage.value = true;
+};
 </script>
 
 <template>
@@ -14,7 +21,7 @@ const store = useStore();
             <h1>{{ `Hello ${store.user?.displayName}!` }}</h1>
         </div>
         <div class="buttons">
-            <button @click="router.push(`/`)" class="button">Logout</button>
+            <button @click="store.logout" class="button">Logout</button>
             <button @click="router.push('/setting')" class="button">Settings</button>
         </div>
     </div>
@@ -25,7 +32,11 @@ const store = useStore();
             <h2 class="item-title">{{ value.title }}</h2>
             <button @click="store.removeFromCart(key)" class="button">Remove</button>
         </div>
-        <button @click="store.clearCart()" class="button">Checkout</button>
+        <div v-if="thankYouMessage" class="thank-you-message">
+            <h2>Thank you for your purchase!</h2>
+        </div>
+        
+        <button @click="handleCheckout" class="button">Checkout</button>
     </div>
     <Footer />
 </template>
@@ -108,5 +119,18 @@ const store = useStore();
 
 .remove-button:hover {
     background-color: #ff1a1a;
+}
+
+.thank-you-message {
+    color: rgb(0, 0, 0);
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 20px;
+    background-color: white;
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
 }
 </style>

@@ -7,7 +7,7 @@ import DetailView from '../views/DetailView.vue';
 import CartView from '../views/CartView.vue';
 import SettingView from '../views/SettingView.vue';
 import ErrorView from '../views/ErrorView.vue';
-import { userAuthorized, useStore } from '../store';
+import {useStore } from '../store';
 
 const routes = [
   { path: '/', meta: { auth: false }, component: HomeView },
@@ -26,9 +26,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  userAuthorized.then(() => {
-    const store = useStore();
-
+  const store = useStore();
+  
+  store.userAuthorized.then(() => {
     if (!store.user && to.meta.auth) {
       next("/login");
     } else {
@@ -36,5 +36,4 @@ router.beforeEach((to, from, next) => {
     }
   });
 });
-
 export default router;

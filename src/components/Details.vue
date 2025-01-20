@@ -24,7 +24,7 @@ onMounted(async () => {
     </div>
     <div class="buttons">
       <button @click="router.push(`/cart`)" class="button">Cart</button>
-      <button @click="router.push(`/`)" class="button">Logout</button>
+      <button @click="store.logout" class="button">Logout</button>
       <button @click="router.push('/setting')" class="button">Settings</button>
     </div>
   </div>
